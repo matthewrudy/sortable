@@ -2,6 +2,8 @@ require 'pp'
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestBook
+  include Sortable
+  
   attr_accessor :author, :title
   
   def initialize(author, title)
@@ -26,14 +28,6 @@ class TestSortable < Test::Unit::TestCase
     end
   end
   
-  def test_object_should_include_sortable
-    assert Object.ancestors.include?(Sortable)
-  end
-  
-  def test_object_should_have_sortable_method
-    assert Object.respond_to?(:sortable)
-  end
-  
   def test_books_should_sort_by_author_and_title
     TestBook.send(:sortable, :author, :title)
     
@@ -51,4 +45,5 @@ class TestSortable < Test::Unit::TestCase
     
     assert_equal [@stroud2, @colfer, @stroud1, @fforde], @books.sort
   end
+
 end
