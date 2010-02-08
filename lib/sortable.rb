@@ -7,8 +7,8 @@ module Sortable
   
   module ClassMethods
     def sortable(*sorters)
-      define_method :"<=>", lambda { |other|
-        if self == other
+      define_method :<=>, lambda { |other|
+        if self.respond_to(:==) && self == other
           0
         else
           comp = 0
@@ -18,7 +18,6 @@ module Sortable
             else
               self.send(sorter) <=> other.send(sorter)
             end
-
             break if comp != 0
           end
           comp
