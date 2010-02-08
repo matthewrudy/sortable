@@ -74,4 +74,25 @@ class TestSortable < Test::Unit::TestCase
     assert_equal [three, six, nine], @supers.sort
   end
   
+  class EqualClass
+    def initialize(n)
+      @n = n
+    end
+    attr_reader :n
+    
+    include Sortable
+    
+    sortable :n
+  
+    def ==(other)
+      true
+    end
+  end
+  
+  def test_equal_records_are_not_sorted # we want to avoid the overhead of calling lots of methods
+    @equals = [EqualClass.new(73), EqualClass.new(12), EqualClass.new(39)]
+    assert_equal @equals, @equals.sort
+    assert_equal [73, 12, 39], @equals.sort.map{|r| r.n}
+  end
+  
 end

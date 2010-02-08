@@ -8,17 +8,21 @@ module Sortable
   module ClassMethods
     def sortable(*sorters)
       define_method :"<=>", lambda { |other|
-        comp = 0
-        sorters.each do |sorter|
-          comp = if sorter.respond_to?(:call)
-            sorter.call(self) <=> sorter.call(other)
-          else
-            self.send(sorter) <=> other.send(sorter)
-          end
+        if self == other
+          0
+        else
+          comp = 0
+          sorters.each do |sorter|
+            comp = if sorter.respond_to?(:call)
+              sorter.call(self) <=> sorter.call(other)
+            else
+              self.send(sorter) <=> other.send(sorter)
+            end
 
-          break if comp != 0
+            break if comp != 0
+          end
+          comp
         end
-        comp
       }
     end
   end
