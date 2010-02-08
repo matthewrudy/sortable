@@ -12,6 +12,24 @@ class TestBook
   end
 end
 
+class BaseBook
+  include Sortable
+  attr_accessor :author
+  sortable :author
+  def initialize(opts)
+    @author = opts[:author]
+  end
+end
+
+class SuperBook < BaseBook
+  attr_accessor :copies
+  sortable :copies
+  def initialize(opts)
+    @copies = opts[:copies]
+    super(opts)
+  end
+end
+
 class TestSortable < Test::Unit::TestCase
   def setup
     @fforde  = TestBook.new('Fforde', 'Something Rotten')
@@ -45,5 +63,15 @@ class TestSortable < Test::Unit::TestCase
     
     assert_equal [@stroud2, @colfer, @stroud1, @fforde], @books.sort
   end
-
+  
+  def test_works_with_inheritance
+    @bases = [BaseBook.new(:author => "BbbbB"), BaseBook.new(:author => "AaaAA"), BaseBook.new(:author => "CccCC")]
+    b, a, c = @bases
+    assert_equal [a,b,c], @bases.sort
+    
+    @supers = [SuperBook.new(:author => "BbbbB", :copies => 999), SuperBook.new(:author => "AaaAA", :copies => 666), SuperBook.new(:author => "CccCC", :copies => 333)]
+    nine, six, three = @supers
+    assert_equal [three, six, nine], @supers.sort
+  end
+  
 end
