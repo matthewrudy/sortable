@@ -8,7 +8,7 @@ module Sortable
   module ClassMethods
     def sortable(*sorters)
       define_method :<=>, lambda { |other|
-        if self.respond_to(:==) && self == other
+        if self.respond_to?(:==) && self == other
           0
         else
           comp = 0
