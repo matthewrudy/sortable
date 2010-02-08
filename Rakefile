@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
 
   # Change these as appropriate
   s.name              = "sortable"
-  s.version           = "0.1.0"
+  s.version           = "0.1.1"
   s.summary           = "Sortable provides a DSL for defining sort order on any Ruby object"
   s.author            = "Ben Scofield"
   s.email             = "ruby@turrean.com"
