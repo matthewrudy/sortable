@@ -1,17 +1,69 @@
-require 'rubygems'
-gem 'hoe', '>= 2.1.0'
-require 'hoe'
-require 'fileutils'
-require './lib/sortable'
+require "rubygems"
+require "rake/gempackagetask"
+require "rake/rdoctask"
 
-Hoe.plugin :newgem
-
-# Generate all the Rake tasks
-# Run 'rake -T' to see list of generated tasks (from gem root directory)
-$hoe = Hoe.spec 'sortable' do
-  self.developer 'Ben Scofield', 'ruby@turrean.com'
-  self.rubyforge_name       = 'sortable-object'
+require "rake/testtask"
+Rake::TestTask.new do |t|
+  t.libs << "test"
+  t.test_files = FileList["test/**/*_test.rb"]
+  t.verbose = true
 end
 
-require 'newgem/tasks'
-Dir['tasks/**/*.rake'].each { |t| load t }
+task :default => ["test"]
+
+# This builds the actual gem. For details of what all these options
+# mean, and other ones you can add, check the documentation here:
+#
+#   http://rubygems.org/read/chapter/20
+#
+spec = Gem::Specification.new do |s|
+
+  # Change these as appropriate
+  s.name              = "sortable"
+  s.version           = "0.1.0"
+  s.summary           = "Sortable provides a DSL for defining sort order on any Ruby object"
+  s.author            = "Ben Scofield"
+  s.email             = "ruby@turrean.com"
+
+  s.has_rdoc          = true
+  s.extra_rdoc_files  = %w(README.rdoc)
+  s.rdoc_options      = %w(--main README.rdoc)
+
+  # Add any extra files to include in the gem
+  s.files             = %w(Rakefile README.rdoc) + Dir.glob("{test,lib/**/*}")
+  s.require_paths     = ["lib"]
+
+  # If you want to depend on other gems, add them here, along with any
+  # relevant versions
+  # s.add_dependency("some_other_gem", "~> 0.1.0")
+
+  # If your tests use any gems, include them here
+  # s.add_development_dependency("mocha") # for example
+end
+
+# This task actually builds the gem. We also regenerate a static
+# .gemspec file, which is useful if something (i.e. GitHub) will
+# be automatically building a gem for this project. If you're not
+# using GitHub, edit as appropriate.
+#
+# To publish your gem online, install the 'gemcutter' gem; Read more 
+# about that here: http://gemcutter.org/pages/gem_docs
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
+
+  # Generate the gemspec file for github.
+  file = File.dirname(__FILE__) + "/#{spec.name}.gemspec"
+  File.open(file, "w") {|f| f << spec.to_ruby }
+end
+
+# Generate documentation
+Rake::RDocTask.new do |rd|
+  rd.main = "README.rdoc"
+  rd.rdoc_files.include("README.rdoc", "lib/**/*.rb")
+  rd.rdoc_dir = "rdoc"
+end
+
+desc 'Clear out RDoc and generated packages'
+task :clean => [:clobber_rdoc, :clobber_package] do
+  rm "#{spec.name}.gemspec"
+end

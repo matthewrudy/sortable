@@ -2,3 +2,5 @@ coverage.info
 coverage/**
 pkg/**
 sortable*.gem
+pkg
+rdoc
